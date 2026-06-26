@@ -44,9 +44,9 @@ window.GameScreens = (() => {
       if (introIndex >= phrases.length) {
         introTimer = setTimeout(() => {
           done();
-        }, 3400);
+        }, 4000);
       } else {
-        introTimer = setTimeout(next, 3400);
+        introTimer = setTimeout(next, 4000);
       }
     };
 

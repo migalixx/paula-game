@@ -16,7 +16,7 @@ window.GAME_CONFIG = {
 'Cada unas de tus palabras resuenan en mi cabeza por días,',
 'Tu risa alegra mi alma, tu mirada la mata de felicidad.',
 'Me encanta la sensación de tu piel, tus mordidas a mis labios,',
-'También el notar su respiración sobre mi cuello, y las cosquillas que me haces',
+'También el notar su respiración sobre mi cuello, y las cosquillas que me haces.',
 'Por ello maldigo la distancia que nos separa,',
 'Aquella que me impide besarte, cogerte del brazo y llenarte la cara de babas.',
 'Así pues, en busca de paliar esta crueldad del destino he creado esta web...',
