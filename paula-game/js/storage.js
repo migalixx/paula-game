@@ -54,20 +54,32 @@ window.GameStorage = (() => {
     };
   }
 
+  async function ensureDocExists(ref, fallbackData) {
+    const {
+      getDoc,
+      setDoc
+    } = await window.PaulaFirebase.init();
+
+    const snapshot = await getDoc(ref);
+
+    if (!snapshot.exists()) {
+      await setDoc(ref, fallbackData);
+    }
+  }
+
   async function startFirebaseSync(onChange) {
     try {
       const {
         db,
         doc,
-        setDoc,
         onSnapshot
       } = await window.PaulaFirebase.init();
 
       const scoresRef = doc(db, "game", "scores");
       const visitsRef = doc(db, "game", "visits");
 
-      await setDoc(scoresRef, defaultScores, { merge: true });
-      await setDoc(visitsRef, defaultVisits, { merge: true });
+      await ensureDocExists(scoresRef, defaultScores);
+      await ensureDocExists(visitsRef, defaultVisits);
 
       if (unsubscribeScores) unsubscribeScores();
       if (unsubscribeVisits) unsubscribeVisits();
@@ -111,18 +123,19 @@ window.GameStorage = (() => {
       const {
         db,
         doc,
-        setDoc,
-        updateDoc,
-        increment
+        runTransaction
       } = await window.PaulaFirebase.init();
 
       const scoresRef = doc(db, "game", "scores");
       const bucket = fromPlayer === "paula" ? "paulaToMiguel" : "miguelToPaula";
 
-      await setDoc(scoresRef, defaultScores, { merge: true });
+      await runTransaction(db, async (transaction) => {
+        const snapshot = await transaction.get(scoresRef);
+        const currentScores = normalizeScores(snapshot.data());
 
-      await updateDoc(scoresRef, {
-        [`${bucket}.${action}`]: increment(1)
+        currentScores[bucket][action] = (currentScores[bucket][action] || 0) + 1;
+
+        transaction.set(scoresRef, currentScores, { merge: true });
       });
     } catch (error) {
       console.warn("No se pudo sumar la acción en Firebase:", error);
@@ -133,17 +146,17 @@ window.GameStorage = (() => {
     const {
       db,
       doc,
-      setDoc,
       runTransaction
     } = await window.PaulaFirebase.init();
 
     const visitsRef = doc(db, "game", "visits");
 
-    await setDoc(visitsRef, defaultVisits, { merge: true });
-
     const newVisitCount = await runTransaction(db, async (transaction) => {
       const snapshot = await transaction.get(visitsRef);
-      const currentVisits = normalizeVisits(snapshot.data());
+      const currentVisits = snapshot.exists()
+        ? normalizeVisits(snapshot.data())
+        : clone(defaultVisits);
+
       const nextValue = (currentVisits[player] || 0) + 1;
 
       transaction.set(

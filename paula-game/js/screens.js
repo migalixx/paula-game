@@ -13,9 +13,17 @@ window.GameScreens = (() => {
   let introIndex = 0;
   let lastTap = 0;
   let currentDone = null;
+  let introAlreadySkipped = false;
+
+  function isIntroActive() {
+    const introScreen = document.getElementById('intro-screen');
+
+    return introScreen && introScreen.classList.contains('active');
+  }
 
   function startIntro(done) {
     currentDone = done;
+    introAlreadySkipped = false;
 
     if (window.GameAudio) {
       window.GameAudio.stopSelectMusic?.();
@@ -54,6 +62,9 @@ window.GameScreens = (() => {
   }
 
   function skipIntro(done = currentDone) {
+    if (introAlreadySkipped) return;
+
+    introAlreadySkipped = true;
     clearTimeout(introTimer);
 
     if (typeof done === 'function') {
@@ -61,18 +72,49 @@ window.GameScreens = (() => {
     }
   }
 
-  document.addEventListener('touchend', () => {
-    const introScreen = document.getElementById('intro-screen');
-
-    if (!introScreen || !introScreen.classList.contains('active')) return;
+  function registerTap() {
+    if (!isIntroActive()) return;
 
     const now = Date.now();
 
-    if (now - lastTap < 320) {
+    if (now - lastTap < 420) {
       skipIntro();
     }
 
     lastTap = now;
+  }
+
+  document.addEventListener('pointerup', (event) => {
+    if (!isIntroActive()) return;
+
+    event.preventDefault();
+    registerTap();
+  });
+
+  document.addEventListener('touchend', (event) => {
+    if (!isIntroActive()) return;
+
+    event.preventDefault();
+    registerTap();
+  }, { passive: false });
+
+  document.addEventListener('dblclick', (event) => {
+    if (!isIntroActive()) return;
+
+    event.preventDefault();
+    skipIntro();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (!isIntroActive()) return;
+
+    if (
+      event.key === 'Enter' ||
+      event.key === ' ' ||
+      event.key === 'Escape'
+    ) {
+      skipIntro();
+    }
   });
 
   return {
