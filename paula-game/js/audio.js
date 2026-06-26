@@ -21,7 +21,19 @@ window.GameAudio = (() => {
   const mainTracks = [
     'assets/music/01.mp3',
     'assets/music/02.mp3',
-    'assets/music/03.mp3'
+    'assets/music/03.mp3',
+    'assets/music/04.mp3',
+    'assets/music/05.mp3',
+    'assets/music/06.mp3',
+    'assets/music/07.mp3',
+    'assets/music/08.mp3',
+    'assets/music/09.mp3',
+    'assets/music/10.mp3',
+    'assets/music/11.mp3',
+    'assets/music/12.mp3',
+    'assets/music/13.mp3',
+    'assets/music/14.mp3',
+    'assets/music/15.mp3'
   ];
 
   function createAudio(src, volume = 1, loop = false) {
@@ -241,6 +253,36 @@ window.GameAudio = (() => {
     }
   }
 
+  function playOptionalSound(src) {
+    if (sfxMuted) return;
+
+    const optionalSound = createAudio(src, soundVolume, false);
+
+    optionalSound.addEventListener(
+      'canplaythrough',
+      () => {
+        lowerMusicTemporarily();
+
+        const playPromise = optionalSound.play();
+
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {});
+        }
+      },
+      { once: true }
+    );
+
+    optionalSound.addEventListener(
+      'error',
+      () => {
+        // Si el archivo no existe, no suena nada.
+      },
+      { once: true }
+    );
+
+    optionalSound.load();
+  }
+
   function setMusicMuted(value) {
     musicMuted = Boolean(value);
     localStorage.setItem(STORAGE_KEYS.musicMuted, String(musicMuted));
@@ -282,6 +324,7 @@ window.GameAudio = (() => {
     playMainForVisit,
     stopMain,
     playSound,
+    playOptionalSound,
     isSelectPlaying,
     toggleMusicMuted,
     toggleSfxMuted,

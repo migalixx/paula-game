@@ -2,6 +2,30 @@ window.PaulaGame = (() => {
   let currentPlayer = 'paula';
   let currentVisit = null;
 
+  function preloadImages() {
+    [
+      'assets/img/paula.png',
+      'assets/img/miguel.png',
+
+      'assets/img/besar.png',
+      'assets/img/besar2.png',
+      'assets/img/morder.png',
+      'assets/img/morder2.png',
+      'assets/img/abrazar.png',
+      'assets/img/abrazar2.png',
+      'assets/img/manitas.png',
+      'assets/img/manitas2.png',
+
+      'assets/img/mute.png',
+      'assets/img/mute2.png',
+      'assets/img/shh.png',
+      'assets/img/shh2.png'
+    ].forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }
+
   function setTheme() {
     document.body.classList.toggle('theme-paula', currentPlayer === 'paula');
     document.body.classList.toggle('theme-miguel', currentPlayer === 'miguel');
@@ -27,6 +51,7 @@ window.PaulaGame = (() => {
     const playerData = window.GAME_CONFIG.players[currentPlayer];
 
     document.getElementById('player-name').textContent = playerData.name;
+
     document.getElementById('interaction-text').textContent =
       `Pulsa cualquier botón para interactuar con ${playerData.other}.`;
 
@@ -71,14 +96,14 @@ window.PaulaGame = (() => {
 
   function bind() {
     document.body.addEventListener('pointerdown', () => {
-  window.GameAudio.unlock();
+      window.GameAudio.unlock();
 
-  const selectScreen = document.getElementById('select-screen');
+      const selectScreen = document.getElementById('select-screen');
 
-  if (selectScreen && selectScreen.classList.contains('active')) {
-    window.GameAudio.forceSelectAfterUserTap();
-  }
-});
+      if (selectScreen && selectScreen.classList.contains('active')) {
+        window.GameAudio.forceSelectAfterUserTap();
+      }
+    });
 
     document.querySelectorAll('[data-select-player]').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -110,65 +135,59 @@ window.PaulaGame = (() => {
     });
 
     document.getElementById('playlist-link').addEventListener('click', () => {
-  const url = window.GAME_CONFIG.spotifyUrl;
-
-  const win = window.open(url, '_blank');
-
-  if (!win) {
-    window.location.href = url;
-  }
-});
+      window.location.href = window.GAME_CONFIG.spotifyUrl;
+    });
 
     const musicMuteButton = document.getElementById('music-mute-button');
-const sfxMuteButton = document.getElementById('sfx-mute-button');
+    const sfxMuteButton = document.getElementById('sfx-mute-button');
 
-function refreshAudioButtons() {
-  const settings = window.GameAudio.getSettings();
+    function refreshAudioButtons() {
+      const settings = window.GameAudio.getSettings();
 
-  const musicImg = musicMuteButton.querySelector('img');
-  const sfxImg = sfxMuteButton.querySelector('img');
+      const musicImg = musicMuteButton.querySelector('img');
+      const sfxImg = sfxMuteButton.querySelector('img');
 
-  musicMuteButton.classList.toggle('active', settings.musicMuted);
-  sfxMuteButton.classList.toggle('active', settings.sfxMuted);
+      musicMuteButton.classList.toggle('active', settings.musicMuted);
+      sfxMuteButton.classList.toggle('active', settings.sfxMuted);
 
-  musicImg.src = settings.musicMuted
-    ? 'assets/img/mute2.png'
-    : 'assets/img/mute.png';
+      musicImg.src = settings.musicMuted
+        ? 'assets/img/mute2.png'
+        : 'assets/img/mute.png';
 
-  sfxImg.src = settings.sfxMuted
-    ? 'assets/img/shh2.png'
-    : 'assets/img/shh.png';
+      sfxImg.src = settings.sfxMuted
+        ? 'assets/img/shh2.png'
+        : 'assets/img/shh.png';
 
-  musicImg.alt = settings.musicMuted
-    ? 'Música muteada'
-    : 'Mutear música';
+      musicImg.alt = settings.musicMuted
+        ? 'Música muteada'
+        : 'Mutear música';
 
-  sfxImg.alt = settings.sfxMuted
-    ? 'Efectos silenciados'
-    : 'Silenciar efectos';
+      sfxImg.alt = settings.sfxMuted
+        ? 'Efectos silenciados'
+        : 'Silenciar efectos';
 
-  musicMuteButton.setAttribute(
-    'aria-label',
-    settings.musicMuted ? 'Activar música' : 'Mutear música'
-  );
+      musicMuteButton.setAttribute(
+        'aria-label',
+        settings.musicMuted ? 'Activar música' : 'Mutear música'
+      );
 
-  sfxMuteButton.setAttribute(
-    'aria-label',
-    settings.sfxMuted ? 'Activar efectos' : 'Silenciar efectos'
-  );
-}
+      sfxMuteButton.setAttribute(
+        'aria-label',
+        settings.sfxMuted ? 'Activar efectos' : 'Silenciar efectos'
+      );
+    }
 
-musicMuteButton.addEventListener('click', () => {
-  window.GameAudio.toggleMusicMuted();
-  refreshAudioButtons();
-});
+    musicMuteButton.addEventListener('click', () => {
+      window.GameAudio.toggleMusicMuted();
+      refreshAudioButtons();
+    });
 
-sfxMuteButton.addEventListener('click', () => {
-  window.GameAudio.toggleSfxMuted();
-  refreshAudioButtons();
-});
+    sfxMuteButton.addEventListener('click', () => {
+      window.GameAudio.toggleSfxMuted();
+      refreshAudioButtons();
+    });
 
-refreshAudioButtons();
+    refreshAudioButtons();
 
     document.querySelectorAll('.love-card').forEach((card) => {
       card.addEventListener('click', () => {
@@ -185,6 +204,8 @@ refreshAudioButtons();
 
   function init() {
     makeHearts();
+    preloadImages();
+
     window.GameAudio.init();
     bind();
 
@@ -213,7 +234,12 @@ refreshAudioButtons();
     }
   }
 
-  return { init };
+  return {
+    init,
+    getCurrentPlayer() {
+      return currentPlayer;
+    }
+  };
 })();
 
 document.addEventListener('DOMContentLoaded', window.PaulaGame.init);

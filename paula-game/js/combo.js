@@ -37,7 +37,13 @@ window.GameCombo = (() => {
 
       if (action === 'besos') {
         setTimeout(() => {
-          window.GameAudio.playSound('besoCombo');
+          const player = window.PaulaGame.getCurrentPlayer?.();
+
+          if (player === 'miguel') {
+            window.GameAudio.playOptionalSound('assets/sounds/sonidobeso2.mp3');
+          } else {
+            window.GameAudio.playSound('besoCombo');
+          }
         }, 1400);
       }
     }
