@@ -64,10 +64,14 @@ window.PaulaGame = (() => {
     window.GameImages.refresh(currentPlayer);
   }
 
-  function startIntroMusic() {
+  async function startIntroMusic() {
+    const playerWhenStarted = currentPlayer;
+
     if (currentVisit === null) {
-      currentVisit = window.GameStorage.incrementVisit(currentPlayer);
+      currentVisit = await window.GameStorage.incrementVisit(playerWhenStarted);
     }
+
+    if (playerWhenStarted !== currentPlayer) return;
 
     window.GameAudio.stopSelect();
     window.GameAudio.playMainForVisit(currentVisit);
@@ -207,6 +211,11 @@ window.PaulaGame = (() => {
     preloadImages();
 
     window.GameAudio.init();
+
+    window.GameStorage.startFirebaseSync(() => {
+      render();
+    });
+
     bind();
 
     const saved = window.GameStorage.getSelectedPlayer();
