@@ -46,7 +46,7 @@ window.GameScreens = (() => {
           done();
         }, 4000);
       } else {
-        introTimer = setTimeout(next, 4000);
+        introTimer = setTimeout(next, 4300);
       }
     };
 
