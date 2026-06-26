@@ -24,6 +24,7 @@ window.GameScreens = (() => {
   function startIntro(done) {
     currentDone = done;
     introAlreadySkipped = false;
+    lastTap = 0;
 
     if (window.GameAudio) {
       window.GameAudio.stopSelectMusic?.();
@@ -79,6 +80,8 @@ window.GameScreens = (() => {
 
     if (now - lastTap < 420) {
       skipIntro();
+      lastTap = 0;
+      return;
     }
 
     lastTap = now;
@@ -90,13 +93,6 @@ window.GameScreens = (() => {
     event.preventDefault();
     registerTap();
   });
-
-  document.addEventListener('touchend', (event) => {
-    if (!isIntroActive()) return;
-
-    event.preventDefault();
-    registerTap();
-  }, { passive: false });
 
   document.addEventListener('dblclick', (event) => {
     if (!isIntroActive()) return;
