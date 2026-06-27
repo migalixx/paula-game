@@ -1,6 +1,6 @@
 window.GameAudio = (() => {
-  const musicVolume = 0.4125;
-  const soundVolume = 0.675;
+  const musicVolume = 0.30;
+  const soundVolume = 0.55;
 
   const STORAGE_KEYS = {
     musicMuted: 'paulaGame.musicMuted',
